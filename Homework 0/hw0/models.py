@@ -22,8 +22,8 @@ class ScaledEmbedding(nn.Embedding):
         self.weight.data.normal_(0, 1.0 / self.embedding_dim)
         if self.padding_idx is not None:
             self.weight.data[self.padding_idx].fill_(0)
-            
-    
+
+
 class ZeroEmbedding(nn.Embedding):
     """
     Embedding layer that initialises its values
@@ -41,8 +41,8 @@ class ZeroEmbedding(nn.Embedding):
         self.weight.data.zero_()
         if self.padding_idx is not None:
             self.weight.data[self.padding_idx].fill_(0)
-            
-        
+
+
 class MultiTaskNet(nn.Module):
     """
     Multitask factorization representation.
@@ -69,22 +69,33 @@ class MultiTaskNet(nn.Module):
 
     """
 
-    def __init__(self, num_users, num_items, embedding_dim=32, layer_sizes=[96, 64], 
+    def __init__(self, num_users, num_items, embedding_dim=32, layer_sizes=[96, 64],
                  sparse=False, embedding_sharing=True):
-
         super().__init__()
 
         self.embedding_dim = embedding_dim
 
-        #********************************************************
-        #******************* YOUR CODE HERE *********************
-        #********************************************************
-        
-        
-        #********************************************************
-        #******************* YOUR CODE HERE *********************
-        #********************************************************
-        
+        # ********************************************************
+        # ******************* YOUR CODE HERE *********************
+        # ********************************************************
+        self.U = ScaledEmbedding(num_users, embedding_dim)
+        self.A = ZeroEmbedding(num_users, 1)
+
+        self.Q = ScaledEmbedding(num_items, embedding_dim)
+        self.B = ZeroEmbedding(num_items, 1)
+
+        layer_sizes += [1]
+        self.MLP = nn.ModuleList([MultiTaskNet.initialize_one_layer(layer_sizes[i], layer_sizes[i+1])
+                                  for i in range(len(layer_sizes) - 1)])
+
+        # ********************************************************
+        # ******************* YOUR CODE HERE *********************
+        # ********************************************************
+
+    @staticmethod
+    def initialize_one_layer(input_size, output_size):
+        return nn.Sequential(nn.Linear(input_size, output_size), nn.ReLU())
+
     def forward(self, user_ids, item_ids):
         """
         Compute the forward pass of the representation.
@@ -109,13 +120,12 @@ class MultiTaskNet(nn.Module):
             (batch,). This corresponds to r_ij in the 
             assignment.
         """
-        
-        #********************************************************
-        #******************* YOUR CODE HERE *********************
-        #********************************************************
 
+        # ********************************************************
+        # ******************* YOUR CODE HERE *********************
+        # ********************************************************
 
-        #********************************************************
-        #********************************************************
-        #********************************************************
+        # ********************************************************
+        # ********************************************************
+        # ********************************************************
         return predictions, score
